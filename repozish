@@ -48,8 +48,8 @@ flag. if the '-a' flag isn't given, it will use the apps listed in
 you may optionally specify a profile name. for instance if you want a different
 window layout when you've got an external monitor.
 
-  $dolla_zero -ga Safari,Terminal,Twitter,MacVim external_monitor
-  $dolla_zero external_monitor
+    $dolla_zero -ga Safari,Terminal,Twitter,MacVim external_monitor
+    $dolla_zero external_monitor
 
 ## options
 

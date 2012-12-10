@@ -41,8 +41,8 @@ flag. if the '-a' flag isn't given, it will use the apps listed in
 you may optionally specify a profile name. for instance if you want a different
 window layout when you've got an external monitor.
 
-  repozish -ga Safari,Terminal,Twitter,MacVim external_monitor
-  repozish external_monitor
+    repozish -ga Safari,Terminal,Twitter,MacVim external_monitor
+    repozish external_monitor
 
 ## options
 
