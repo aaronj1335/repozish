@@ -101,7 +101,6 @@ get_dims() {
 }
 
 if [ $mode = get ]; then
-  # ( rm -f $run_control || true ) && touch $run_control
   run_control_tmp="`mktemp /tmp/$dolla_zero.XXXX`"
   [ -e $run_control ] && cat $run_control | grep -v $profile > $run_control_tmp
   for app in $apps; do
