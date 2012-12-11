@@ -9,7 +9,7 @@ DOC_RUN_CONTROL = "~/.#{DOLLA_ZERO}rc"
 RUN_CONTROL = File.expand_path DOC_RUN_CONTROL
 USAGE = """
 `#{DOLLA_ZERO}(1)` -- mac os x window layout utility
-====================================================
+===============================================
 
 ## synopsis
 
@@ -53,9 +53,35 @@ window layout when you've got an external monitor.
     #{DOLLA_ZERO} -ga Safari,Terminal,Twitter,MacVim external_monitor
     #{DOLLA_ZERO} external_monitor
 
+when you omit the profile, `#{DOLLA_ZERO}(1)` picks a default profile name
+that's specific to the monitor configuration. so as long as you've set up
+profiles for the monitors that are currently plugged in, you can just run:
+
+    #{DOLLA_ZERO}(1)
+
+and it will choose the appropriate layout for the attached screens.
+
 ## options
 
 """
+
+def set_dims(app, dims)
+  `osascript -e 'tell application "#{app}" to set the bounds of the front window to {#{dims.join ', '}}'`
+end
+
+def get_dims(app)
+  `osascript -e 'tell application "#{app}" to get the bounds of the front window'`
+end
+
+def displays()
+  display_data = YAML.load(`system_profiler SPDisplaysDataType`)
+  display_data['Graphics/Displays'].map do |d|
+    monitors = d[1]['Displays']
+    if monitors && monitors.length
+      monitors.map{|m| m[1]['Resolution']}.join('').gsub(' ', '')
+    end
+  end.find_all{|d| d}.join "_"
+end
 
 mode = 'set'
 apps = nil
@@ -74,20 +100,12 @@ o = OptionParser.new do |o|
   o.parse!            # oh, parse!
 end
 
-profile = ARGV[0] || "_default"
+profile = ARGV[0] || "_default" + displays
 
 rc = File.exists?(RUN_CONTROL)? YAML::load_file(RUN_CONTROL) : {}
 rc[profile] = {} unless rc[profile]
 
 apps = rc[profile].keys unless apps
-
-def set_dims(app, dims)
-  `osascript -e 'tell application "#{app}" to set the bounds of the front window to {#{dims.join ', '}}'`
-end
-
-def get_dims(app)
-  `osascript -e 'tell application "#{app}" to get the bounds of the front window'`
-end
 
 apps.each do |app|
   if mode == 'get'
@@ -98,3 +116,4 @@ apps.each do |app|
 end
 
 File.open(RUN_CONTROL, 'w') { |f| f.write(rc.to_yaml) }
+

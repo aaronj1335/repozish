@@ -1,6 +1,6 @@
 
 `repozish(1)` -- mac os x window layout utility
-====================================================
+===============================================
 
 ## synopsis
 
@@ -31,8 +31,8 @@ size the apps accordingly.
 
 ## other notes
 
-`repozish(1)` only operates on the front window of applications. it may not
-work as desired with applications that have more than one window.
+`repozish(1)` only operates on the front window of applications. it may
+not work as desired with applications that have more than one window.
 
 `repozish(1)` will first use the application list passed in with the '-a'
 flag. if the '-a' flag isn't given, it will use the apps listed in
@@ -44,9 +44,16 @@ window layout when you've got an external monitor.
     repozish -ga Safari,Terminal,Twitter,MacVim external_monitor
     repozish external_monitor
 
+when you omit the profile, `repozish(1)` picks a default profile name
+that's specific to the monitor configuration. so as long as you've set up
+profiles for the monitors that are currently plugged in, you can just run:
+
+    repozish(1)
+
+and it will choose the appropriate layout for the attached screens.
+
 ## options
 
-    -a  the list of applications to reposition
-    -g  get the current window positions and size and write them to
-        ~/.repozishrc
-    -h  Show this help message
+    -a, --apps app1,app2             apps to size and reposition
+    -g, --get                        'get' mode -- just get the apps' positions
+    -h, --help                       print this help message
