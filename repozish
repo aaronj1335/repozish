@@ -1,121 +1,100 @@
-#!/bin/bash -e
+#!/usr/bin/env ruby
 
-dolla_zero="`basename $0`"
-run_control="$HOME/.${dolla_zero}rc"
-doc_run_control="`echo $run_control | sed "s|$HOME|~|"`"
-mode=set
+require 'optparse'
+require 'fileutils'
+require 'yaml'
 
-USAGE="
-\`$dolla_zero(1)\` -- mac os x window layout utility
+DOLLA_ZERO = File.basename $0
+DOC_RUN_CONTROL = "~/.#{DOLLA_ZERO}rc"
+RUN_CONTROL = File.expand_path DOC_RUN_CONTROL
+USAGE = """
+`#{DOLLA_ZERO}(1)` -- mac os x window layout utility
 ====================================================
 
 ## synopsis
 
-    $dolla_zero [-hg] [-a <app1>,<app2>,...] [<profile>]
+    #{DOLLA_ZERO} [-hg] [-a <app1>,<app2>,...] [<profile>]
 
 ## description
 
-nerd alert! \`$dolla_zero(1)\` repositions the windows of your applications to
+nerd alert! `#{DOLLA_ZERO}(1)` repositions the windows of your applications to
 your preferred layout.
 
 ## getting the positions and sizes of windows:
 
 executing the following:
 
-    $dolla_zero -g -a Safari,Terminal,Twitter,MacVim
+    #{DOLLA_ZERO} -g -a Safari,Terminal,Twitter,MacVim
 
 will get the current positions and sizes of the listed applications, and write
-them to your \`$doc_run_control\` file.
+them to your `#{DOC_RUN_CONTROL}` file.
 
 ## setting the positions and sizes of windows:
 
 executing the following:
 
-    $dolla_zero
+    #{DOLLA_ZERO}
 
-will read the positions of the files in \`$doc_run_control\` and position and
+will read the positions of the files in `#{DOC_RUN_CONTROL}` and position and
 size the apps accordingly.
 
 ## other notes
 
-\`$dolla_zero(1)\` only operates on the front window of applications. it may not
-work as desired with applications that have more than one window.
+`#{DOLLA_ZERO}(1)` only operates on the front window of applications. it may
+not work as desired with applications that have more than one window.
 
-\`$dolla_zero(1)\` will first use the application list passed in with the '-a'
+`#{DOLLA_ZERO}(1)` will first use the application list passed in with the '-a'
 flag. if the '-a' flag isn't given, it will use the apps listed in
-\`$doc_run_control\`. otherwise it'll just like crash or something.
+`#{DOC_RUN_CONTROL}`. otherwise it'll just like crash or something.
 
 you may optionally specify a profile name. for instance if you want a different
 window layout when you've got an external monitor.
 
-    $dolla_zero -ga Safari,Terminal,Twitter,MacVim external_monitor
-    $dolla_zero external_monitor
+    #{DOLLA_ZERO} -ga Safari,Terminal,Twitter,MacVim external_monitor
+    #{DOLLA_ZERO} external_monitor
 
 ## options
 
-    -a  the list of applications to reposition
-    -g  get the current window positions and size and write them to
-        $doc_run_control
-    -h  Show this help message"
+"""
 
-# Parse command line options.
-while getopts hga: OPT; do
-    case "$OPT" in
-        h)
-            echo "$USAGE"
-            exit 0
-            ;;
-        g)
-            mode=get
-            ;;
-        a)
-            apps="`echo $OPTARG | tr ',' ' '`"
-            ;;
-        \?)
-            # getopts issues an error message
-            echo "$USAGE" >&2
-            exit 1
-            ;;
-    esac
-done
+mode = 'set'
+apps = nil
 
-# Remove the switches we parsed above.
-shift `expr $OPTIND - 1`
+o = OptionParser.new do |o|
+  o.on('-a', '--apps app1,app2', 'apps to size and reposition') do |apps|
+    apps = apps.split ','
+  end
+  o.on('-g', '--get', "'get' mode -- just get the apps' positions") do
+    mode = 'get'
+  end
+  o.on('-h', '--help', 'print this help message') do
+    puts USAGE + o.summarize.join
+    exit
+  end
+  o.parse!            # oh, parse!
+end
 
-if [ $1 ]; then
-  profile="$1"
-else
-  profile=_default
-fi
+profile = ARGV[0] || "_default"
 
-if [ ! "$apps" ]; then
-  apps="`grep $profile $run_control | cut -d' ' -f2`"
-fi
+rc = File.exists?(RUN_CONTROL)? YAML::load_file(RUN_CONTROL) : {}
+rc[profile] = {} unless rc[profile]
 
-set_dims() {
-  osascript -e "tell application \"$1\" to set the bounds of the front window to {$2}"
-}
+apps = rc[profile].keys unless apps
 
-get_dims() {
-  osascript -e "tell application \"$1\" to get the bounds of the front window"
-}
+def set_dims(app, dims)
+  `osascript -e 'tell application "#{app}" to set the bounds of the front window to {#{dims.join ', '}}'`
+end
 
-if [ $mode = get ]; then
-  run_control_tmp="`mktemp /tmp/$dolla_zero.XXXX`"
-  [ -e $run_control ] && cat $run_control | grep -v $profile > $run_control_tmp
-  for app in $apps; do
-    dims=`get_dims $app 2>/dev/null || true`
-    if [ "$dims" ]; then
-      echo -n "$profile $app " >> $run_control_tmp
-      echo $dims >> $run_control_tmp
-    fi
-  done
-  mv $run_control_tmp $run_control
-else
-  for app in $apps; do
-    dims="`grep \"$profile $app\" $run_control | cut -d' ' -f3,4,5,6`"
-    set_dims "$app" "$dims" || true
-  done
-fi
+def get_dims(app)
+  `osascript -e 'tell application "#{app}" to get the bounds of the front window'`
+end
 
+apps.each do |app|
+  if mode == 'get'
+    rc[profile][app] = get_dims(app).split(',').map {|s| s.to_i}
+  else
+    set_dims app, rc[profile][app] if rc[profile][app]
+  end
+end
 
+File.open(RUN_CONTROL, 'w') { |f| f.write(rc.to_yaml) }
