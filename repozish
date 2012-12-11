@@ -48,16 +48,16 @@ flag. if the '-a' flag isn't given, it will use the apps listed in
 `#{DOC_RUN_CONTROL}`. otherwise it'll just like crash or something.
 
 you may optionally specify a profile name. for instance if you want a different
-window layout when you've got an external monitor.
+window layout when you're doing a preso or some crap:
 
-    #{DOLLA_ZERO} -ga Safari,Terminal,Twitter,MacVim external_monitor
-    #{DOLLA_ZERO} external_monitor
+    #{DOLLA_ZERO} -ga Safari,Terminal,Twitter,MacVim alt_layout
+    #{DOLLA_ZERO} alt_layout
 
 when you omit the profile, `#{DOLLA_ZERO}(1)` picks a default profile name
 that's specific to the monitor configuration. so as long as you've set up
 profiles for the monitors that are currently plugged in, you can just run:
 
-    #{DOLLA_ZERO}(1)
+    #{DOLLA_ZERO}
 
 and it will choose the appropriate layout for the attached screens.
 
@@ -90,7 +90,7 @@ o = OptionParser.new do |o|
   o.on('-a', '--apps app1,app2', 'apps to size and reposition') do |apps|
     apps = apps.split ','
   end
-  o.on('-g', '--get', "'get' mode -- just get the apps' positions") do
+  o.on('-g', '--get', "'get' mode -- just write the apps' positions") do
     mode = 'get'
   end
   o.on('-h', '--help', 'print this help message') do

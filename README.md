@@ -39,21 +39,21 @@ flag. if the '-a' flag isn't given, it will use the apps listed in
 `~/.repozishrc`. otherwise it'll just like crash or something.
 
 you may optionally specify a profile name. for instance if you want a different
-window layout when you've got an external monitor.
+window layout when you're doing a preso or some crap:
 
-    repozish -ga Safari,Terminal,Twitter,MacVim external_monitor
-    repozish external_monitor
+    repozish -ga Safari,Terminal,Twitter,MacVim alt_layout
+    repozish alt_layout
 
 when you omit the profile, `repozish(1)` picks a default profile name
 that's specific to the monitor configuration. so as long as you've set up
 profiles for the monitors that are currently plugged in, you can just run:
 
-    repozish(1)
+    repozish
 
 and it will choose the appropriate layout for the attached screens.
 
 ## options
 
     -a, --apps app1,app2             apps to size and reposition
-    -g, --get                        'get' mode -- just get the apps' positions
+    -g, --get                        'get' mode -- just write the apps' positions
     -h, --help                       print this help message
