@@ -29,6 +29,10 @@ executing the following:
 will read the positions of the files in `~/.repozishrc` and position and
 size the apps accordingly.
 
+## installation
+
+    gem install repozish
+
 ## other notes
 
 `repozish(1)` only operates on the front window of applications. it may

@@ -38,6 +38,10 @@ executing the following:
 will read the positions of the files in `#{DOC_RUN_CONTROL}` and position and
 size the apps accordingly.
 
+## installation
+
+    gem install repozish
+
 ## other notes
 
 `#{DOLLA_ZERO}(1)` only operates on the front window of applications. it may
