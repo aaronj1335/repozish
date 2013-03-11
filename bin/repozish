@@ -70,11 +70,18 @@ and it will choose the appropriate layout for the attached screens.
 """
 
 def set_dims(app, dims)
-  `osascript -e 'tell application "#{app}" to set the bounds of the front window to {#{dims.join ', '}}'`
+  `osascript -e 'set theSBounds to {{#{dims[0]}, #{dims[1]-1}}, {#{dims[2]}, #{dims[3]}}}
+  tell application \"System Events\"
+    set size of front window of application process \"#{app}\" to item 1 of theSBounds
+    set position of front window of application process \"#{app}\" to item 2 of theSBounds
+  end tell'`
 end
 
 def get_dims(app)
-  `osascript -e 'tell application "#{app}" to get the bounds of the front window'`
+  `osascript -e 'tell application \"System Events\"
+    set the props to get the properties of the front window of application process \"#{app}\"
+    {size, position} of props
+  end tell'`
 end
 
 def displays()
