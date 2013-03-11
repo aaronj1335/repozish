@@ -70,7 +70,7 @@ and it will choose the appropriate layout for the attached screens.
 """
 
 def set_dims(app, dims)
-  `osascript -e 'set theSBounds to {{#{dims[0]}, #{dims[1]-1}}, {#{dims[2]}, #{dims[3]}}}
+  `osascript -e 'set theSBounds to {{#{dims[0]}, #{dims[1]}}, {#{dims[2]}, #{dims[3]}}}
   tell application \"System Events\"
     set size of front window of application process \"#{app}\" to item 1 of theSBounds
     set position of front window of application process \"#{app}\" to item 2 of theSBounds
@@ -122,7 +122,7 @@ apps.each do |app|
   if mode == 'get'
     rc[profile][app] = get_dims(app).split(',').map {|s| s.to_i}
   else
-    set_dims app, rc[profile][app] if rc[profile][app]
+    2.times { set_dims app, rc[profile][app] if rc[profile][app] }
   end
 end
 
