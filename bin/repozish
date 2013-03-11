@@ -89,9 +89,9 @@ def displays()
   display_data['Graphics/Displays'].map do |d|
     monitors = d[1]['Displays']
     if monitors && monitors.length
-      monitors.map{|m| m[1]['Resolution']}.join('').gsub(' ', '')
+      monitors.map{|m| m[1]['Resolution'].gsub(' ', '')}.sort().join('_')
     end
-  end.find_all{|d| d}.join "_"
+  end.find_all{|d| d}.sort().join "_"
 end
 
 mode = 'set'
