@@ -98,8 +98,8 @@ mode = 'set'
 apps = nil
 
 o = OptionParser.new do |o|
-  o.on('-a', '--apps app1,app2', 'apps to size and reposition') do |apps|
-    apps = apps.split ','
+  o.on('-a', '--apps app1,app2', 'apps to size and reposition') do |app_str|
+    apps = app_str.split ','
   end
   o.on('-g', '--get', "'get' mode -- just write the apps' positions") do
     mode = 'get'
