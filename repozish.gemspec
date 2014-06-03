@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = "repozish"
-  s.version     = "0.0.1"
+  s.version     = "0.0.2"
   s.date        = "2012-12-10"
   s.summary     = "size and reposition windows in mac os x based on saved profiles"
   s.authors     = ["Aaron Stacy"]
